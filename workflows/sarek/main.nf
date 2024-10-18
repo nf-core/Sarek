@@ -291,7 +291,10 @@ workflow SAREK {
 
         // reads will be sorted
         sort_bam = true
-        FASTQ_ALIGN_BWAMEM_MEM2_DRAGMAP_SENTIEON(reads_for_alignment, index_alignment, sort_bam, fasta, fasta_fai)
+        FASTQ_ALIGN_BWAMEM_MEM2_DRAGMAP_SENTIEON(reads_for_alignment, index_alignment, sort_bam, fasta, fasta_fai,
+                                                    known_sites_indels.mix(known_sites_snps).unique().map{ files -> [[id: "known_sites"], files] }.ifEmpty([[:],[]]),
+                                                    known_sites_indels_tbi.mix(known_sites_snps_tbi).unique().map{ files -> [[id: "known_sites"], files] }.ifEmpty([[:],[]])
+                                                    )
 
         // Grouping the bams from the same samples not to stall the workflow
         // Use groupKey to make sure that the correct group can advance as soon as it is complete

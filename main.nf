@@ -161,7 +161,7 @@ workflow NFCORE_SAREK {
                                     : PREPARE_GENOME.out.hashtable
 
     // Gather index for mapping given the chosen aligner
-    index_alignment = (aligner == "bwa-mem" || aligner == "sentieon-bwamem") ? bwa :
+    index_alignment = (aligner == "bwa-mem" || aligner == "sentieon-bwamem"  || aligner == "parabricks") ? bwa :
         aligner == "bwa-mem2" ? bwamem2 :
         dragmap
 
