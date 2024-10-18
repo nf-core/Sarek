@@ -259,7 +259,7 @@ workflow SAREK {
 
             if (params.split_fastq) {
                 reads_for_alignment = FASTP.out.reads.map{ meta, reads ->
-                    read_files = reads.sort(false) { a,b -> a.getName().tokenize('.')[0] <=> b.getName().tokenize('.')[0] }.collate(2)
+                    def read_files = reads.sort(false) { a,b -> a.getName().tokenize('.')[0] <=> b.getName().tokenize('.')[0] }.collate(2)
                     [ meta + [ n_fastq: read_files.size() ], read_files ]
                 }.transpose()
             } else reads_for_alignment = FASTP.out.reads
@@ -360,7 +360,7 @@ workflow SAREK {
         versions = versions.mix(FASTQ_ALIGN_BWAMEM_MEM2_DRAGMAP_SENTIEON.out.versions)
     }
 
-    if (params.step in ['mapping', 'markduplicates'] && !params.step in ['parabricks']) {
+    if (params.step in ['mapping', 'markduplicates'] ) {
 
         // ch_cram_no_markduplicates_restart = Channel.empty()
         cram_markduplicates_no_spark = Channel.empty()
@@ -473,7 +473,7 @@ workflow SAREK {
         else CHANNEL_MARKDUPLICATES_CREATE_CSV(ch_md_cram_for_restart, csv_subfolder, params.outdir, params.save_output_as_bam)
     }
 
-    if (params.step in ['mapping', 'markduplicates', 'prepare_recalibration'] && !params.step in ['parabricks']) {
+    if (params.step in ['mapping', 'markduplicates', 'prepare_recalibration'] ) {
 
         // Run if starting from step "prepare_recalibration"
         if (params.step == 'prepare_recalibration') {
@@ -509,7 +509,7 @@ workflow SAREK {
         }
 
         // STEP 3: Create recalibration tables
-        if (!(params.skip_tools && params.skip_tools.split(',').contains('baserecalibrator')) && !params.step in ['parabricks']) {
+        if (!(params.skip_tools && params.skip_tools.split(',').contains('baserecalibrator'))) {
 
             ch_table_bqsr_no_spark = Channel.empty()
             ch_table_bqsr_spark    = Channel.empty()
@@ -679,7 +679,7 @@ workflow SAREK {
             params.skip_tools && params.skip_tools.split(',').contains('baserecalibrator'),
             intervals_for_preprocessing)
 
-    if (params.tools) {
+        if (params.tools) {
 
         //
         // Logic to separate germline samples, tumor samples with no matched normal, and combine tumor-normal pairs
