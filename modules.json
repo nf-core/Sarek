@@ -356,7 +356,7 @@
                     },
                     "parabricks/fq2bam": {
                         "branch": "master",
-                        "git_sha": "2fe1d9713a234768540b9fb0ee515e52dc613ddf",
+                        "git_sha": "666652151335353eef2fcd58880bcef5bc2928e1",
                         "installed_by": ["modules"]
                     },
                     "samblaster": {
