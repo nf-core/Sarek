@@ -42,11 +42,11 @@ workflow FASTQ_ALIGN_BWAMEM_MEM2_DRAGMAP_SENTIEON {
     bam = bam.mix(BWAMEM2_MEM.out.bam)
     bam = bam.mix(DRAGMAP_ALIGN.out.bam)
     bam = bam.mix(SENTIEON_BWAMEM.out.bam_and_bai.map{ meta, bam, bai -> [ meta, bam ] })
-    bam = bam.mix(PARABRICKS_FQ2BAM.out.cram)
+    bam = bam.mix(PARABRICKS_FQ2BAM.out.bam)
 
     bai = Channel.empty()
                 .mix(SENTIEON_BWAMEM.out.bam_and_bai.map{ meta, bam, bai -> [ meta, bai ] })
-                .mix(PARABRICKS_FQ2BAM.out.crai)
+                .mix(PARABRICKS_FQ2BAM.out.bai)
 
     // Optional outputs for parabricks_fq2bam
     qc_metrics = PARABRICKS_FQ2BAM.out.qc_metrics

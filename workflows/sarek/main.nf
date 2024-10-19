@@ -382,21 +382,14 @@ workflow SAREK {
         // Should it be possible to restart from converted crams?
         // For now, conversion from bam to cram is only done when skipping markduplicates
 
-        CRAM_QC_NO_MD(bam_mapped.join(bai_mapped), fasta, intervals_for_preprocessing)
-
-        // Gather QC reports
-        reports = reports.mix(CRAM_QC_NO_MD.out.reports.collect{ meta, report -> [ report ] })
-        // Gather used softwares versions
-        versions = versions.mix(CRAM_QC_NO_MD.out.versions)
-
         if (
             params.skip_tools &&
             params.skip_tools.split(',').contains('markduplicates') &&
             !(params.tools && params.tools.split(',').contains('sentieon_dedup'))
         ) {
+            print("here")
             if (params.step == 'mapping') {
-                cram_skip_markduplicates = bam_mapped.join(bai_mapped)
-                                                //BAM_TO_CRAM_MAPPING.out.cram.join(BAM_TO_CRAM_MAPPING.out.crai, failOnDuplicate: true, failOnMismatch: true)
+                cram_skip_markduplicates = BAM_TO_CRAM_MAPPING.out.cram.join(BAM_TO_CRAM_MAPPING.out.crai, failOnDuplicate: true, failOnMismatch: true)
             } else {
                 input_markduplicates_convert = input_sample.branch{
                     bam:  it[0].data_type == "bam"
@@ -410,7 +403,13 @@ workflow SAREK {
                 cram_skip_markduplicates = Channel.empty().mix(input_markduplicates_convert.cram, BAM_TO_CRAM.out.cram.join(BAM_TO_CRAM.out.crai, failOnDuplicate: true, failOnMismatch: true))
             }
             cram_skip_markduplicates.view()
+            CRAM_QC_NO_MD(cram_skip_markduplicates, fasta, intervals_for_preprocessing)
 
+            // Gather QC reports
+            reports = reports.mix(CRAM_QC_NO_MD.out.reports.collect{ meta, report -> [ report ] })
+
+            // Gather used softwares versions
+            versions = versions.mix(CRAM_QC_NO_MD.out.versions)
         } else if (params.use_gatk_spark && params.use_gatk_spark.contains('markduplicates')) {
             BAM_MARKDUPLICATES_SPARK(
                 cram_for_markduplicates,
