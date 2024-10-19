@@ -13,10 +13,10 @@ process PARABRICKS_FQ2BAM {
 
 
     output:
-    tuple val(meta), path("*.bam")                , emit: bam
-    tuple val(meta), path("*.bai")                , emit: bai
-    tuple val(meta), path("*.cram")                , emit: cram
-    tuple val(meta), path("*.crai")                , emit: crai
+    tuple val(meta), path("*.bam")                , emit: bam, optional:true 
+    tuple val(meta), path("*.bai")                , emit: bai, optional:true 
+    tuple val(meta), path("*.cram")               , emit: cram, optional:true 
+    tuple val(meta), path("*.crai")               , emit: crai, optional:true 
     path "versions.yml"                           , emit: versions
     path "qc_metrics", optional:true              , emit: qc_metrics
     path("*.table"), optional:true                , emit: bqsr_table
@@ -31,7 +31,7 @@ process PARABRICKS_FQ2BAM {
         error "Parabricks module does not support Conda. Please use Docker / Singularity / Podman instead."
     }
     def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    def prefix = task.ext.prefix ?: "${meta.id}.bam"
     def in_fq_command = meta.single_end ? "--in-se-fq $reads" : "--in-fq $reads"
     def known_sites_command = known_sites ? known_sites.collect{"--knownSites $it"}.join(' ') : ""
     def known_sites_output = known_sites ? "--out-recal-file ${prefix}.table" : ""
