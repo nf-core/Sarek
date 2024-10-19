@@ -10,8 +10,8 @@ process PARABRICKS_DEEPVARIANT {
     tuple val(meta3), path(fai)
 
     output:
-    tuple val(meta), path("*.vcf"), emit: vcf
-    path "versions.yml",            emit: versions
+    tuple val(meta), path("*.vcf.gz"), emit: vcf
+    path "versions.yml",                emit: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -24,7 +24,7 @@ process PARABRICKS_DEEPVARIANT {
 
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
-    def output_file = args =~ "gvcf" ? "${prefix}.g.vcf" : "${prefix}.vcf"
+    def output_file = args =~ "gvcf" ? "${prefix}.g.vcf.gz" : "${prefix}.vcf.gz"
     def interval_file_command = interval_file ? interval_file.collect{"--interval-file $it"}.join(' ') : ""
     """
 
