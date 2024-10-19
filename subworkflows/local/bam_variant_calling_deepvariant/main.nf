@@ -3,7 +3,7 @@
 //
 // For all modules here:
 // A when clause condition is defined in the conf/modules.config to determine if the module should be run
-
+include { PARABRICKS_DEEPVARIANT                    } from '../../../modules/nf-core/parabricks/deepvariant/main'
 include { DEEPVARIANT_RUNDEEPVARIANT                } from '../../../modules/nf-core/deepvariant/rundeepvariant/main'
 include { GATK4_MERGEVCFS as MERGE_DEEPVARIANT_GVCF } from '../../../modules/nf-core/gatk4/mergevcfs/main'
 include { GATK4_MERGEVCFS as MERGE_DEEPVARIANT_VCF  } from '../../../modules/nf-core/gatk4/mergevcfs/main'
@@ -25,7 +25,11 @@ workflow BAM_VARIANT_CALLING_DEEPVARIANT {
         // Move num_intervals to meta map
         .map{ meta, cram, crai, intervals, num_intervals -> [ meta + [ num_intervals:num_intervals ], cram, crai, intervals ]}
 
-    DEEPVARIANT_RUNDEEPVARIANT(cram_intervals, fasta, fasta_fai, [ [ id:'null' ], [] ], [ [ id:'null' ], [] ])
+    if(params.aligner == "parabricks") {
+        PARABRICKS_DEEPVARIANT(cram_intervals, fasta, fasta_fai)
+    } else {
+        DEEPVARIANT_RUNDEEPVARIANT(cram_intervals, fasta, fasta_fai, [ [ id:'null' ], [] ], [ [ id:'null' ], [] ])
+    }
 
     // Figuring out if there is one or more vcf(s) from the same sample
     vcf_out = DEEPVARIANT_RUNDEEPVARIANT.out.vcf.branch{
