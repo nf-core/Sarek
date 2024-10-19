@@ -46,7 +46,7 @@ process PARABRICKS_FQ2BAM {
         --ref \$INDEX \\
         $in_fq_command \\
         --read-group-sm $meta.id \\
-        --out-bam ${prefix}.bam \\
+        --out-bam ${prefix} \\
         $known_sites_command \\
         $known_sites_output \\
         $interval_file_command \\
