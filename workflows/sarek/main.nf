@@ -388,7 +388,8 @@ workflow SAREK {
             !(params.tools && params.tools.split(',').contains('sentieon_dedup'))
         ) {
             if (params.step == 'mapping') {
-                cram_skip_markduplicates = params.aligner == "parabricks" ? bam_mapped.join(bai_mapped) : BAM_TO_CRAM_MAPPING.out.cram.join(BAM_TO_CRAM_MAPPING.out.crai, failOnDuplicate: true, failOnMismatch: true)
+                cram_skip_markduplicates =bam_mapped.join(bai_mapped)
+                                                //BAM_TO_CRAM_MAPPING.out.cram.join(BAM_TO_CRAM_MAPPING.out.crai, failOnDuplicate: true, failOnMismatch: true)
             } else {
                 input_markduplicates_convert = input_sample.branch{
                     bam:  it[0].data_type == "bam"
@@ -401,7 +402,7 @@ workflow SAREK {
 
                 cram_skip_markduplicates = Channel.empty().mix(input_markduplicates_convert.cram, BAM_TO_CRAM.out.cram.join(BAM_TO_CRAM.out.crai, failOnDuplicate: true, failOnMismatch: true))
             }
-
+            cram_skip_markduplicates.view()
             CRAM_QC_NO_MD(cram_skip_markduplicates, fasta, intervals_for_preprocessing)
 
             // Gather QC reports
