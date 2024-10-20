@@ -35,6 +35,7 @@ process PARABRICKS_DEEPVARIANT {
         --out-variants $output_file \\
         $interval_file_command \\
         --num-gpus $task.accelerator.request \\
+        --tmp-dir . \\
         $args
 
     cat <<-END_VERSIONS > versions.yml
