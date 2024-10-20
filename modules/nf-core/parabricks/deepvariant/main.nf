@@ -10,7 +10,7 @@ process PARABRICKS_DEEPVARIANT {
     tuple val(meta3), path(fai)
 
     output:
-    tuple val(meta), path("*.vcf.gz"), emit: vcf
+    tuple val(meta), path("*.vcf"), emit: vcf
     path "versions.yml",                emit: versions
 
     when:
