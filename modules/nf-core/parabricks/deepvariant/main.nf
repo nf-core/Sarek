@@ -24,7 +24,7 @@ process PARABRICKS_DEEPVARIANT {
 
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
-    def output_file = args =~ "gvcf" ? "${prefix}.g.vcf.gz" : "${prefix}.vcf.gz"
+    def output_file = args =~ "gvcf" ? "${prefix}.g.vcf.gz" : "${prefix}.vcf"
     def interval_file_command = interval_file ? interval_file.collect{"--interval-file $it"}.join(' ') : ""
     """
 
