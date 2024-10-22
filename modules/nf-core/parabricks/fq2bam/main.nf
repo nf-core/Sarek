@@ -39,7 +39,7 @@ process PARABRICKS_FQ2BAM {
     """
 
     INDEX=`find -L ./ -name "*.amb" | sed 's/\\.amb\$//'`
-    cp $fasta \$INDEX
+    ln -s \$(readlink $fasta) \$INDEX/$fasta
 
     pbrun \\
         fq2bam \\
