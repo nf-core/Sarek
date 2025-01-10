@@ -29,13 +29,13 @@ concurrency:
 jobs:
   test:
     runs-on: ubuntu-latest
-    name: "Test ${{ matrix.filter }} | ${{ matrix.profile }} | ${{ matrix.NXF_VER }} | ${{ matrix.shard }}/5"
+    name: "Test ${{ matrix.filter }} | ${{ matrix.profile }} | ${{ matrix.NXF_VER}} | ${{ matrix.shard }}/5"
     strategy:
       fail-fast: false
       matrix:
         NXF_VER:
-          - "24.04.2"
-          - "latest-everything"
+          - 24.10.2
+          - latest-everything
         filter: ["workflow", "function", "pipeline"]
         # filter: ["process", "workflow", "function", "pipeline"]
         profile: ["conda", "docker", "singularity"]
@@ -123,6 +123,25 @@ jobs:
       - name: Disk space cleanup
         uses: jlumbroso/free-disk-space@v1.3.1
 
+      - name: create references
+        id: references
+        run: |
+          mkdir tmp/
+          cd tmp/
+          nextflow run nf-core/references -profile ${{ matrix.profile }} \
+          -r 8112ae8 \
+          --input https://raw.githubusercontent.com/nf-core/references-assets/41545a3631addaf491d22751b17607149b8512ac/assets/test/sarek/GRCh38_chr22.yml \
+          --tools bwamem1,createsequencedictionary,faidx,intervals,tabix \
+          --outdir ../references/
+          cd ..
+          rm -rf tmp/
+
+      - name: use references
+        id: references-use
+        run: |
+          nextflow run . -profile test,${{ matrix.profile }} --outdir results \
+          -params-file https://raw.githubusercontent.com/nf-core/references-assets/41545a3631addaf491d22751b17607149b8512ac/assets/test/sarek/GRCh38_chr22_params.yml
+
       - name: Start summary
         id: print-test
         run: |
@@ -141,7 +160,7 @@ jobs:
             --filter ${{ matrix.filter }} \
             | grep PASSED | cut -d "'" -f 2 | sed 's/^/- /' | sort -u >> $GITHUB_STEP_SUMMARY
 
-      - name: "Run tests | ${{ matrix.filter }}_${{ matrix.profile }} | ${{ matrix.shard }}/5"
+      - name: "Run tests | ${{ matrix.filter }}_${{ matrix.profile }} | ${{ matrix.shard}}/5"
         run: |
           nf-test test \
               --ci \
